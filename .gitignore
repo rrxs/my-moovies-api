@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MyMoovies.Api/bin
+/MyMoovies.Api/obj
+/.vs
