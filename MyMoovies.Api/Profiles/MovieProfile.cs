@@ -11,7 +11,9 @@ namespace MyMooviesApi.Profiles
         {
             CreateMap<MovieTMDB, MovieDto>()
                 .ForMember(destination => destination.PosterUrl,
-                            map => map.MapFrom(src => src.PosterPath));
+                            map => map.MapFrom(src => src.PosterPath))
+                .ForMember(destination => destination.IsWatched,
+                            map => map.Ignore());
 
             CreateMap<UserMovie, MovieDto>()
                 .ForMember(destination => destination.Id, map => map.MapFrom(src => src.IdMovie));

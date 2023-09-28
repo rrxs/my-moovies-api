@@ -4,7 +4,7 @@ namespace MyMooviesApi.HttpClients
 {
     public interface ITMDBClient
     {
-        Task<IEnumerable<MovieTMDB>> GetPopularMovies();
-        Task<MovieTMDB> GetMovieById(int idMovie);
+        Task<IEnumerable<MovieTMDB>> GetPopularMoviesAsync();
+        Task<MovieTMDB> GetMovieByIdAsync(int idMovie);
     }
 }

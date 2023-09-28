@@ -3,6 +3,7 @@ using MyMooviesApi.Repositories;
 using MyMooviesApi.Repositories.Models;
 using MyMooviesApi.Authentication;
 using System.IdentityModel.Tokens.Jwt;
+using MyMooviesApi.Services;
 
 var originsConfigName = "originsConfig";
 
@@ -30,11 +31,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
 
 // HttpClients Configuration
 builder.Services.AddHttpClient<ITMDBClient, TMDBClient>();
 
 builder.Services.AddAuthenticationJwt();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

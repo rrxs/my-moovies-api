@@ -23,9 +23,9 @@ namespace MyMooviesApi.HttpClients
                 HeaderNames.Accept, "application/json");
         }
 
-        public async Task<IEnumerable<MovieTMDB>> GetPopularMovies()
+        public async Task<IEnumerable<MovieTMDB>> GetPopularMoviesAsync()
         {
-            PagedResult<MovieTMDB> result = new();
+            PagedResult<MovieTMDB>? result = new();
             var response = await _httpClient.GetAsync("/3/movie/popular?language=en-US&page=1");
             if (response.IsSuccessStatusCode)
             {
@@ -35,7 +35,7 @@ namespace MyMooviesApi.HttpClients
             return result.Results;
         }
 
-        public async Task<MovieTMDB> GetMovieById(int idMovie)
+        public async Task<MovieTMDB> GetMovieByIdAsync(int idMovie)
         {
             MovieTMDB result = null;
             var response = await _httpClient.GetAsync($"/3/movie/{idMovie}&language=en-US"); 
@@ -43,7 +43,6 @@ namespace MyMooviesApi.HttpClients
             {
                 result = await response.Content.ReadFromJsonAsync<MovieTMDB>();
             }
-            
 
             return result;
         }

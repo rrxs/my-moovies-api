@@ -5,7 +5,7 @@ using MyMooviesApi.Dtos;
 using MyMooviesApi.HttpClients;
 using MyMooviesApi.Repositories;
 using MyMooviesApi.Repositories.Models;
-using System.IdentityModel.Tokens.Jwt;
+using MyMooviesApi.Services;
 
 namespace MyMooviesApi.Controllers
 {
@@ -17,15 +17,21 @@ namespace MyMooviesApi.Controllers
         private readonly ITMDBClient _tMBDClient;
         private readonly IMapper _mapper;
         private readonly IRepository<UserMovie> _userMovieRepository;
+        private readonly IMovieService _movieService;
+        private readonly IUserService _userService;
 
         public MoviesController(
             IRepository<UserMovie> userMovieRepository,
             ITMDBClient tMBDClient,
-            IMapper mapper)
+            IMapper mapper,
+            IMovieService movieService,
+            IUserService userService)
         {
             _userMovieRepository = userMovieRepository;
             _tMBDClient = tMBDClient;
             _mapper = mapper;
+            _movieService = movieService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -34,9 +40,8 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetPopularMovies()
         {
-            var popularMovies = await _tMBDClient.GetPopularMovies();
-            var moviesDtos = _mapper.Map<IEnumerable<MovieDto>>(popularMovies);
-            return Ok(moviesDtos);
+            var popularMovies = await _movieService.GetPopularMoviesAsync();
+            return Ok(popularMovies);
         }
 
         [HttpPost]
@@ -45,8 +50,8 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MarkMovieWatched(MarkMovieWatchedDto markMovieWatchedDto)
         {
-            var loggedUserId = Guid.Parse(User.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId).Value);
-            var movie = await _tMBDClient.GetMovieById(markMovieWatchedDto.IdMovie);
+            var loggedUserId = _userService.GetLoggedUserId();
+            var movie = await _tMBDClient.GetMovieByIdAsync(markMovieWatchedDto.IdMovie);
 
             if (movie == null)
             {
@@ -72,7 +77,7 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> MarkMovieUnWatched(MarkMovieUnWatchedDto markMovieUnWatchedDto)
         {
-            var loggedUserId = Guid.Parse(User.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId).Value);
+            var loggedUserId = _userService.GetLoggedUserId();
             var markedMovie = await _userMovieRepository
                 .GetAsync(item => item.IdMovie == markMovieUnWatchedDto.IdMovie && item.IdUser == loggedUserId);
            
@@ -91,7 +96,7 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> ListMovieWatched()
         {
-            var loggedUserId = Guid.Parse(User.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId).Value);
+            var loggedUserId = _userService.GetLoggedUserId();
             var moviesWatched = await _userMovieRepository.GetAllAsync(item => item.IdUser == loggedUserId);
             var moviesWatchedDto = _mapper.Map<IEnumerable<MovieDto>>(moviesWatched);
             return Ok(moviesWatchedDto);
@@ -102,7 +107,7 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMovieById(int idMovie)
         {
-            var movie = await _tMBDClient.GetMovieById(idMovie);
+            var movie = await _tMBDClient.GetMovieByIdAsync(idMovie);
 
             if(movie == null)
             {
