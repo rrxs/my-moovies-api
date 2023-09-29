@@ -25,6 +25,12 @@ namespace MyMooviesApi.Services
             _userService = userService;
         }
 
+        public async Task<MovieDto> GetMovieByIdAsync(int idMovie)
+        {
+            var movie = await _tMBDClient.GetMovieByIdAsync(idMovie);
+            return _mapper.Map<MovieDto>(movie);
+        }
+
         public async Task<IEnumerable<MovieDto>> GetPopularMoviesAsync()
         {
             var loggedUserId = _userService.GetLoggedUserId();
@@ -46,6 +52,48 @@ namespace MyMooviesApi.Services
             }
 
             return popularMoviesParsed;
+        }
+
+        public async Task<IEnumerable<MovieDto>> ListMovieWatchedAsync()
+        {
+            var loggedUserId = _userService.GetLoggedUserId();
+            var moviesWatched = await _userMovieRepository.GetAllAsync(item => item.IdUser == loggedUserId);
+            return _mapper.Map<IEnumerable<MovieDto>>(moviesWatched);
+        }
+
+        public async Task MarkMovieUnWatchedAsync(int idMovie)
+        {
+            var loggedUserId = _userService.GetLoggedUserId();
+            var markedMovie = await _userMovieRepository
+                .GetAsync(item => item.IdMovie == idMovie && item.IdUser == loggedUserId);
+
+            if (markedMovie == null)
+            {
+                throw new Exception("movie not found");
+            }
+
+            await _userMovieRepository.RemoveAsync(markedMovie.Id);
+        }
+
+        public async Task MarkMovieWatchedAsync(int idMovie)
+        {
+            var loggedUserId = _userService.GetLoggedUserId();
+            var movie = await _tMBDClient.GetMovieByIdAsync(idMovie);
+
+            if (movie == null)
+            {
+                throw new Exception("movie not found");
+            }
+
+            var userMovie = new UserMovie
+            {
+                IdUser = loggedUserId,
+                IdMovie = idMovie,
+                Title = movie.Title,
+                PosterUrl = movie.PosterPath
+            };
+
+            await _userMovieRepository.CreateAsync(userMovie);
         }
     }
 }

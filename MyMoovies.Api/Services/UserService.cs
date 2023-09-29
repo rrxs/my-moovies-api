@@ -1,5 +1,4 @@
-﻿using MyMooviesApi.Repositories.Models;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 
 namespace MyMooviesApi.Services
 {

@@ -14,21 +14,15 @@ namespace MyMooviesApi.Controllers
     [Route("api/movies")]
     public class MoviesController : ControllerBase
     {
-        private readonly ITMDBClient _tMBDClient;
         private readonly IMapper _mapper;
-        private readonly IRepository<UserMovie> _userMovieRepository;
         private readonly IMovieService _movieService;
         private readonly IUserService _userService;
 
         public MoviesController(
-            IRepository<UserMovie> userMovieRepository,
-            ITMDBClient tMBDClient,
             IMapper mapper,
             IMovieService movieService,
             IUserService userService)
         {
-            _userMovieRepository = userMovieRepository;
-            _tMBDClient = tMBDClient;
             _mapper = mapper;
             _movieService = movieService;
             _userService = userService;
@@ -48,26 +42,9 @@ namespace MyMooviesApi.Controllers
         [Route("mark-watched")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> MarkMovieWatched(MarkMovieWatchedDto markMovieWatchedDto)
+        public async Task<IActionResult> MarkMovieWatched(int idMovie)
         {
-            var loggedUserId = _userService.GetLoggedUserId();
-            var movie = await _tMBDClient.GetMovieByIdAsync(markMovieWatchedDto.IdMovie);
-
-            if (movie == null)
-            {
-                return BadRequest();
-            }
-
-            var userMovie = new UserMovie
-            {
-                IdUser = loggedUserId,
-                IdMovie = markMovieWatchedDto.IdMovie,
-                Title = movie.Title,
-                PosterUrl = movie.PosterPath
-            };
-
-            await _userMovieRepository.CreateAsync(userMovie);
-
+            await _movieService.MarkMovieWatchedAsync(idMovie);
             return Ok();
         }
 
@@ -75,19 +52,9 @@ namespace MyMooviesApi.Controllers
         [Route("mark-unwatched")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> MarkMovieUnWatched(MarkMovieUnWatchedDto markMovieUnWatchedDto)
+        public async Task<IActionResult> MarkMovieUnWatched(int idMovie)
         {
-            var loggedUserId = _userService.GetLoggedUserId();
-            var markedMovie = await _userMovieRepository
-                .GetAsync(item => item.IdMovie == markMovieUnWatchedDto.IdMovie && item.IdUser == loggedUserId);
-           
-            if(markedMovie == null)
-            {
-                return NotFound();
-            }
-
-            await _userMovieRepository.RemoveAsync(markedMovie.Id);
-
+            await _movieService.MarkMovieUnWatchedAsync(idMovie);
             return Ok();
         }
 
@@ -96,9 +63,7 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<MovieDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> ListMovieWatched()
         {
-            var loggedUserId = _userService.GetLoggedUserId();
-            var moviesWatched = await _userMovieRepository.GetAllAsync(item => item.IdUser == loggedUserId);
-            var moviesWatchedDto = _mapper.Map<IEnumerable<MovieDto>>(moviesWatched);
+            var moviesWatchedDto = await _movieService.ListMovieWatchedAsync();
             return Ok(moviesWatchedDto);
         }
 
@@ -107,15 +72,14 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMovieById(int idMovie)
         {
-            var movie = await _tMBDClient.GetMovieByIdAsync(idMovie);
+            var movieDto = await _movieService.GetMovieByIdAsync(idMovie);
 
-            if(movie == null)
+            if(movieDto == null)
             {
                 return NotFound();
             }
 
-            var movidDto = _mapper.Map<MovieDto>(movie);
-            return Ok(movidDto);
+            return Ok(movieDto);
         }
     }
 }
