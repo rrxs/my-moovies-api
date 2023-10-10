@@ -52,7 +52,7 @@ if (app.Environment.IsDevelopment())
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 app.UseCors(originsConfigName);
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

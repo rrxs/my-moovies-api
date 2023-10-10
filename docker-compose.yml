@@ -1,0 +1,32 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  mymooviesapi:
+    image: ${DOCKER_REGISTRY-}mymooviesapi
+    container_name: mymoovies_api
+    ports:
+      - "8088:80"
+    build:
+      context: .
+      dockerfile: MyMoovies.Api/Dockerfile
+    networks:
+      - dev
+    environment:
+      - MongoConfig__Host=mongo
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - "app_data:/var/lib/mongo/data"
+    networks:
+      - dev
+
+volumes:
+  app_data: 
+  

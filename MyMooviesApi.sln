@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyMooviesApi", "MyMoovies.Api\MyMooviesApi.csproj", "{3D6C5FFC-2E66-4B4A-AAA1-78CC8118E0E0}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C35ECDB4-EB0E-468B-B440-D64C2FB876C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3D6C5FFC-2E66-4B4A-AAA1-78CC8118E0E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D6C5FFC-2E66-4B4A-AAA1-78CC8118E0E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D6C5FFC-2E66-4B4A-AAA1-78CC8118E0E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C35ECDB4-EB0E-468B-B440-D64C2FB876C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C35ECDB4-EB0E-468B-B440-D64C2FB876C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C35ECDB4-EB0E-468B-B440-D64C2FB876C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C35ECDB4-EB0E-468B-B440-D64C2FB876C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
