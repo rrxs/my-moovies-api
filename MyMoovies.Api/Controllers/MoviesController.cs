@@ -2,9 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyMooviesApi.Dtos;
-using MyMooviesApi.HttpClients;
-using MyMooviesApi.Repositories;
-using MyMooviesApi.Repositories.Models;
 using MyMooviesApi.Services;
 
 namespace MyMooviesApi.Controllers

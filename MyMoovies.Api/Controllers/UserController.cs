@@ -25,7 +25,7 @@ namespace MyMooviesApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> SignUp(CreateUserDto createUserDto)
+        public async Task<IActionResult> CreateUser(CreateUserDto createUserDto)
         {
             if (createUserDto.Email == null)
             {

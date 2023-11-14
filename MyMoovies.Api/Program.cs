@@ -9,15 +9,6 @@ var originsConfigName = "originsConfig";
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: originsConfigName,
-                      policy =>
-                      {
-                          policy.WithOrigins("*");
-                      });
-});
-
 builder.Services.AddMongo()
     .AddMongoRepository<User>("users")
     .AddMongoRepository<UserMovie>("usermovies");
@@ -48,6 +39,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(options =>
+{
+    options
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
