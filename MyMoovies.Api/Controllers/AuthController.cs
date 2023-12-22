@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyMooviesApi.Authentication;
 using MyMooviesApi.Dtos;
-using MyMooviesApi.Repositories;
-using MyMooviesApi.Repositories.Models;
+using MyMooviesApi.Services;
+using System.Net;
 
 namespace MyMooviesApi.Controllers
 {
@@ -10,62 +9,45 @@ namespace MyMooviesApi.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IJwtProvider _jwtProvider;
+        private readonly IAuthService _authService;
 
-        public AuthController(
-            IRepository<User> userRepository,
-            IJwtProvider jwtProvider)
+        public AuthController(IAuthService authService)
         {
-            _userRepository = userRepository;
-            _jwtProvider = jwtProvider;
+            _authService = authService;
         }
 
         [HttpPost]
         [Route("signin")]
         [ProducesResponseType(typeof(SigninResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Signin(SigninDto loginDto)
         {
-            var user = await _userRepository.GetAsync(item => item.Email == loginDto.Email);
-
-            if (user == null)
+            try
             {
-                return NotFound();
+                var token = await _authService.Signin(loginDto);
+                return Ok(token);
             }
-
-            var tokenDto = new SigninResponseDto
+            catch (Exception e)
             {
-                AccessToken = _jwtProvider.GenerateToken(user)
-            };
-
-            return Ok(tokenDto);
+                return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+            }
         }
 
         [HttpPost]
         [Route("signup")]
         [ProducesResponseType(typeof(SignupResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Signup(SignupDto signupDto)
         {
-            var userRegistred = await _userRepository.GetAsync(item => item.Email == signupDto.Email);
-
-            if (userRegistred != null)
+            try
             {
-                return BadRequest("Email unavailable");
+                var userCreated = await _authService.Signup(signupDto);
+                return Ok(userCreated);
             }
-
-            var user = new User { Email = signupDto.Email, Name = signupDto.Name };
-            await _userRepository.CreateAsync(user);
-
-            var signupResponseDto = new SignupResponseDto
+            catch (Exception e)
             {
-                AccessToken = _jwtProvider.GenerateToken(user),
-                Name = signupDto.Name,
-                Email = signupDto.Email,
-            };
-
-            return Ok(signupResponseDto);
+                return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+            }
         }
     }
 }

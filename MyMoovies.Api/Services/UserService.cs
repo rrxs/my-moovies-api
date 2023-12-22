@@ -1,7 +1,6 @@
 ﻿using MyMooviesApi.Repositories.Models;
 using MyMooviesApi.Repositories;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Mvc;
 using MyMooviesApi.Dtos;
 using AutoMapper;
 

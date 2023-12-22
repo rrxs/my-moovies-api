@@ -24,6 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // HttpClients Configuration
 builder.Services.AddHttpClient<ITMDBClient, TMDBClient>();
