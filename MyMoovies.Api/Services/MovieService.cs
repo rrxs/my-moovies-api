@@ -58,7 +58,14 @@ namespace MyMooviesApi.Services
         {
             var loggedUserId = _userService.GetLoggedUserId();
             var moviesWatched = await _userMovieRepository.GetAllAsync(item => item.IdUser == loggedUserId);
-            return _mapper.Map<IEnumerable<MovieDto>>(moviesWatched);
+            var mappedMovies = _mapper.Map<IEnumerable<MovieDto>>(moviesWatched);
+
+            foreach (var movie in mappedMovies)
+            {
+                movie.IsWatched = true;
+            }
+
+            return mappedMovies;
         }
 
         public async Task MarkMovieUnWatchedAsync(int idMovie)

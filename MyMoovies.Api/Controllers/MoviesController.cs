@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyMooviesApi.Dtos;
@@ -11,18 +10,12 @@ namespace MyMooviesApi.Controllers
     [Route("api/movies")]
     public class MoviesController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly IMovieService _movieService;
-        private readonly IUserService _userService;
 
         public MoviesController(
-            IMapper mapper,
-            IMovieService movieService,
-            IUserService userService)
+            IMovieService movieService)
         {
-            _mapper = mapper;
             _movieService = movieService;
-            _userService = userService;
         }
 
         [HttpGet]
@@ -39,9 +32,9 @@ namespace MyMooviesApi.Controllers
         [Route("mark-watched")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> MarkMovieWatched(int idMovie)
+        public async Task<IActionResult> MarkMovieWatched([FromBody] MarkMovieDto markMovie)
         {
-            await _movieService.MarkMovieWatchedAsync(idMovie);
+            await _movieService.MarkMovieWatchedAsync(markMovie.IdMovie);
             return Ok();
         }
 
@@ -49,9 +42,9 @@ namespace MyMooviesApi.Controllers
         [Route("mark-unwatched")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> MarkMovieUnWatched(int idMovie)
+        public async Task<IActionResult> MarkMovieUnWatched([FromBody] MarkMovieDto markMovie)
         {
-            await _movieService.MarkMovieUnWatchedAsync(idMovie);
+            await _movieService.MarkMovieUnWatchedAsync(markMovie.IdMovie);
             return Ok();
         }
 

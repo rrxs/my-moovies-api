@@ -8,4 +8,6 @@ namespace MyMooviesApi.Dtos
         public bool IsWatched { get; set; }
     }
 
+    public record MarkMovieDto(int IdMovie);
+
 }

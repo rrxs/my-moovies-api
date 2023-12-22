@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyMooviesApi.Dtos;
 using MyMooviesApi.Repositories;
 using MyMooviesApi.Repositories.Models;
+using MyMooviesApi.Services;
 
 namespace MyMooviesApi.Controllers
 {
@@ -12,14 +12,11 @@ namespace MyMooviesApi.Controllers
     [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public UserController(IRepository<User> userRepository,
-            IMapper mapper)
+        public UserController(IUserService userService)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -27,15 +24,20 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUser(CreateUserDto createUserDto)
         {
-            if (createUserDto.Email == null)
+            try
+            {
+                var userCreated = await _userService.CreateUserAsync(createUserDto);
+                if (userCreated == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(userCreated);
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
-            var user = new User { Email = createUserDto.Email };
-            await _userRepository.CreateAsync(user);
-
-            var userDto = _mapper.Map<UserDto>(user);
-            return Ok(userDto);
         }
 
         [HttpGet]
@@ -43,43 +45,42 @@ namespace MyMooviesApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> ListUsers()
         {
-            var usersDb = await _userRepository.GetAllAsync();
-            var users = _mapper.Map<IEnumerable<UserDto>>(usersDb);
+            var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var searchUser = await _userRepository.GetAsync(user => user.Id == id);
-
-            if (searchUser == null)
+            try
             {
-                return NotFound();
+                await _userService.RemoveUserByIdAsync(id);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
 
-            await _userRepository.RemoveAsync(searchUser.Id);
-
-            return Ok();
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUser(Guid id)
         {
-            var searchUser = await _userRepository.GetAsync(user => user.Id == id);
-
-            if (searchUser == null)
+            try
             {
-                return NotFound();
+                var user = await _userService.GetUserByIdAsync(id);
+                return Ok(user);
             }
-
-            var user = _mapper.Map<UserDto>(searchUser);
-
-            return Ok(user);
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }
