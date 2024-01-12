@@ -6,10 +6,6 @@ This project is a personal movie tracker API built using dotnet C#. The API uses
 
 The application use the [The Movie Database API (TMDB)](https://developer.themoviedb.org/docs/getting-started) to fetch movies.
 
-## Architecture
-
-![arch diagram](assets/arch.png)
-
 ## Features
 
 - Authentication (JWT)
@@ -26,6 +22,10 @@ The application use the [The Movie Database API (TMDB)](https://developer.themov
 - dotnet 7
 - MongoDB
 - Docker
+
+## Architecture
+
+![arch diagram](assets/arch.png)
 
 ## Demo
 
