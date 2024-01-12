@@ -4,7 +4,7 @@
 
 This project is a personal movie tracker API built using dotnet C#. The API uses a N-Layer architecture, MongoDB as the database and Swagger for API documentation and testing.
 
-The application use the [The Movie Database API (TMDB)](https://developer.themoviedb.org/docs/getting-started) to fetch the movies.
+The application use the [The Movie Database API (TMDB)](https://developer.themoviedb.org/docs/getting-started) to fetch movies.
 
 ## Architecture
 
