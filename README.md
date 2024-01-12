@@ -13,6 +13,7 @@ The application use the [The Movie Database API (TMDB)](https://developer.themov
 ## Features
 
 - Authentication (JWT)
+- Users can create a new account
 - Users can see a list with popular movies
 - Users can mark movies watched
 - Users can see a list with movies marked as watched
