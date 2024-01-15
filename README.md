@@ -22,6 +22,7 @@ The application use the [The Movie Database API (TMDB)](https://developer.themov
 - dotnet 7
 - MongoDB
 - Docker
+- Swagger
 
 ## Architecture
 
